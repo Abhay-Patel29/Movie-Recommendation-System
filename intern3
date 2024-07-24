@@ -1,0 +1,38 @@
+import numpy as np
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+# create simple dataset
+data = {
+      'Movie1'= [5, 4, 0, 0, 1],
+      'Movie2'= [3, 0, 0, 2, 0],
+      'Movie3'= [0, 0, 3, 4, 4],
+      'Movie4'= [1, 1, 4, 5, 4],
+      'Movie5'= [4, 2, 0, 1, 0]
+}
+#create a dataframe
+df=pd.DataFrame(data, index=['user1','user2','user3','user4','user5'])
+#calculate the similarity matrix
+user_similarity=cosine_similarity(df)
+user_similarity_df = pd.DataFrame(user_similarity, index=df.index, columns=df.index)
+
+#Function to get movie recomendation from a user
+def get_recomadations(user, df,user_similarity_df, n_recomadiations=3):
+   user_rating=df.loc[user]
+   similar_user=user_similarity_df[user].sort_values(assending=False)
+   recomadations=pd.series(dtype=float)
+   for similar_user in similar_user.index:
+      if similar_user == user:
+        continue
+      similar_user_rating = df.loc[similar_user]
+      for movie, rating in similar_user_rating.items():
+          if user_rating[movie]=0 and rating > 0:
+            if movie not in recomandation:
+              recomandations[movie] = rating
+            else:
+              recomadations[movie] += rating
+   recomadations= recomadations.sort_values(asending=False).head(n_recomandation)
+   return recomandations
+#Example: Get recomandations for user1
+recomandations= get_rcomadations('user1', df, user_similarity_df)
+print("Recomadations for user1")
+print(recomadations)
